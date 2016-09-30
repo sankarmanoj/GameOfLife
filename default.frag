@@ -11,7 +11,7 @@ void main()
 if (mag > 4.0f) discard;
 
 
-    color=vec4(1.0f,0.0f,0.0f,1.0f);
+    color=vec4(0.1f,0.9f,0.2f,1.0f);
 
 
 

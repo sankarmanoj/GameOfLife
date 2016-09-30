@@ -32,9 +32,9 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 // Window dimensions
 const GLuint WIDTH = 1900, HEIGHT = 1000;
-const GLuint POSITION_WIDTH = 20;
-const GLuint POSITION_HEIGHT = 20;
-const GLuint POSITION_DEPTH = 20;
+const GLuint POSITION_WIDTH = 200;
+const GLuint POSITION_HEIGHT = 200;
+const GLuint POSITION_DEPTH = 200;
 const GLuint HALF_POSITION_WIDTH = POSITION_WIDTH/2;
 const GLint DEPTH_OFFSET = -1;
 const GLuint TOTAL_POSITIONS = POSITION_HEIGHT* POSITION_WIDTH*POSITION_DEPTH;
@@ -127,7 +127,7 @@ int main()
     GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
     for(int i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,10);
+      cellFrame[i]=rInt(100,80);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
 
