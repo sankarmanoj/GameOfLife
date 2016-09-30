@@ -34,10 +34,9 @@ GLfloat lastFrame = 0.0f;
 const GLuint WIDTH = 1900, HEIGHT = 1000;
 const GLuint POSITION_WIDTH = 200;
 const GLuint POSITION_HEIGHT = 200;
-const GLuint POSITION_DEPTH = 200;
 const GLuint HALF_POSITION_WIDTH = POSITION_WIDTH/2;
 const GLint DEPTH_OFFSET = -1;
-const GLuint TOTAL_POSITIONS = POSITION_HEIGHT* POSITION_WIDTH*POSITION_DEPTH;
+const GLuint TOTAL_POSITIONS = POSITION_HEIGHT* POSITION_WIDTH;
 //Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -46,8 +45,6 @@ void Do_Movement();
 int convertDenseToSparse(int * dense, int * sparse)
 {
   int count = 0;
-  for(int h = 0; h<POSITION_DEPTH;h++)
-  {
     for(int i =0 ; i<POSITION_HEIGHT;i++)
     {
       for(int j = 0; j<POSITION_WIDTH;j++)
@@ -55,14 +52,12 @@ int convertDenseToSparse(int * dense, int * sparse)
         if(dense[i*POSITION_WIDTH + j])
         {
 
-          sparse[count*3]=j-HALF_POSITION_WIDTH;
-          sparse[count*3 + 1]=i;
-          sparse[count*3 + 2]=h+DEPTH_OFFSET;
+          sparse[count*2]=j-HALF_POSITION_WIDTH;
+          sparse[count*2 + 1]=i;
           count++;
         }
       }
     }
-  }
   return count;
 }
 GLuint rInt(GLuint Max,GLuint Threshold)
@@ -124,7 +119,7 @@ int main()
     Shader ourShader("default.vs", "default.frag");
     GLuint currentNumberOfCells;
     GLint * cellFrame = (GLint*)malloc(sizeof(int)*TOTAL_POSITIONS);
-    GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
+    GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*2*TOTAL_POSITIONS);
     for(int i = 0; i<TOTAL_POSITIONS; i++)
     {
       cellFrame[i]=rInt(100,95);
@@ -152,9 +147,9 @@ int main()
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,2*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STATIC_DRAW);
     //Position Attributes
-    glVertexAttribPointer(0,3,GL_INT,GL_FALSE,3*sizeof(GLfloat),(GLvoid*)0);
+    glVertexAttribPointer(0,2,GL_INT,GL_FALSE,2*sizeof(GLfloat),(GLvoid*)0);
     glEnableVertexAttribArray(0);
     //Mass Atrribute
     // glVertexAttribPointer(1,1,GL_FLOAT,GL_FALSE,8*sizeof(GLfloat),(GLvoid *)(6*sizeof(GLfloat)));
@@ -201,7 +196,7 @@ int main()
         glUniformMatrix4fv(modelLoc,1,GL_FALSE,glm::value_ptr(model));
 
         GLfloat startDraw = glfwGetTime();
-        glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER,2*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STATIC_DRAW);
         glDrawArrays(GL_POINTS , 0, currentNumberOfCells);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER,0);
