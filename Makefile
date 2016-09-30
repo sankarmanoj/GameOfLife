@@ -9,12 +9,13 @@ run: cuda build
 	export LD_LIBRARY_PATH=/usr/local/cuda/lib:$(LD_LIBRARY_PATH)
 	exec ./$(OUTPUT)
 
-build :
+build : sim.cpp default.frag default.vs Camera.h Shader.h
 		$(CC) $(CUDAOUT)  sim.cpp  $(LDFLAGS) -L/usr/local/cuda/lib -l cuda  -l cudart -l glfw3 -l GLEW -framework $(FRAMEWORK) -o $(OUTPUT)
-
-cuda :
+debug:  sim.cpp default.frag default.vs Camera.h Shader.h
+		$(CC) $(CUDAOUT)  sim.cpp  $(LDFLAGS) -g  -Wall -L/usr/local/cuda/lib -l cuda  -l cudart -l glfw3 -l GLEW -framework $(FRAMEWORK) -o $(OUTPUT)
+cuda : simCuda.cu
 	nvcc -c simCuda.cu -o $(CUDAOUT)
 clean :
 	rm simCuda.o
-	rm *.o	
+	rm *.o
 	rm $(OUTPUT)
