@@ -127,7 +127,7 @@ int main()
     GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
     for(int i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,80);
+      cellFrame[i]=rInt(100,95);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
 
@@ -152,7 +152,7 @@ int main()
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STATIC_DRAW);
     //Position Attributes
     glVertexAttribPointer(0,3,GL_INT,GL_FALSE,3*sizeof(GLfloat),(GLvoid*)0);
     glEnableVertexAttribArray(0);
@@ -198,34 +198,18 @@ int main()
         glUniformMatrix4fv(projLoc,1,GL_FALSE,glm::value_ptr(projection));
         glBindBuffer(GL_ARRAY_BUFFER,VBO);
         glBindVertexArray(VAO);
-        //model = glm::rotate(model,(GLfloat)glfwGetTime()*20.0f,glm::vec3(0.0f,0.0f,1.0f));
         glUniformMatrix4fv(modelLoc,1,GL_FALSE,glm::value_ptr(model));
-        // particles[0]=0;
-        // particles[1]=0;
-        // particles[2]=0.0;
-        // particles[3]=0.0f;
-        // particles[4]=0.0f;
-        // particles[5]=0.0f;
-        // particles[6]=5000.0f;
-        // particles[7]=1.0f;
-        #ifdef DEBUG
-        for (int i =0; i<8*debugPrintCount; i++)
-        {
-          std::cout<<particles[i]<<":";
-          if((i+1)%8==0)
-          std::cout<<std::endl;
-        }
-        std::cout<<"Done with try "<<count<<std::endl;
-        if(count==debugCount)
-        break;
-        #endif
-        glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STREAM_DRAW);
+
+        GLfloat startDraw = glfwGetTime();
+        glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STATIC_DRAW);
         glDrawArrays(GL_POINTS , 0, currentNumberOfCells);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER,0);
+        GLfloat endDraw = glfwGetTime();
+        printf("\r Time = %f Frame Rate = %f",(endDraw-startDraw),(1/(endDraw-startDraw)));
         // Swap the screen buffers
         glfwSwapBuffers(window);
-        count++;
+
 
 
     }
@@ -241,16 +225,18 @@ int main()
 void Do_Movement()
 {
     // Camera controls
-    if(keys[GLFW_KEY_W])
-        {
-          camera.ProcessKeyboard(FORWARD, deltaTime);
-        }
-    if(keys[GLFW_KEY_S])
+    if(keys[GLFW_KEY_Q])
+      camera.ProcessKeyboard(FORWARD, deltaTime);
+    if(keys[GLFW_KEY_E])
         camera.ProcessKeyboard(BACKWARD, deltaTime);
     if(keys[GLFW_KEY_A])
         camera.ProcessKeyboard(LEFT, deltaTime);
     if(keys[GLFW_KEY_D])
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if(keys[GLFW_KEY_W])
+        camera.ProcessKeyboard(UP,deltaTime);
+    if(keys[GLFW_KEY_S])
+        camera.ProcessKeyboard(DOWN,deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
