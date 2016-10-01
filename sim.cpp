@@ -25,6 +25,7 @@ int frameRate = 40;
 int debugCount = 40;
 int debugPrintCount = 4;
 int numberParticles = 1024*1;
+float bright = 1.0f;
 //Init Camera
 Camera camera(glm::vec3(0.0f,0.0f,25.0f));
 bool keys[1024];
@@ -55,7 +56,7 @@ int convertDenseToSparse(int * dense, int * sparse)
     {
       for(int j = 0; j<POSITION_WIDTH;j++)
       {
-        if(dense[i*POSITION_WIDTH + j])
+        if(dense[h*POSITION_HEIGHT*POSITION_WIDTH + i*POSITION_WIDTH + j])
         {
 
           sparse[count*3]=j-HALF_POSITION_WIDTH;
@@ -130,7 +131,7 @@ int main()
     GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
     for(int i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,80);
+      cellFrame[i]=rInt(100,98);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
 
@@ -197,8 +198,12 @@ int main()
         GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
         GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
         GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
+        GLint cameraLoc = glGetUniformLocation(ourShader.Program, "camera");
+        GLint brightLoc = glGetUniformLocation(ourShader.Program, "brightnessConstant");
         glUniformMatrix4fv(viewLoc,1,GL_FALSE,glm::value_ptr(view));
         glUniformMatrix4fv(projLoc,1,GL_FALSE,glm::value_ptr(projection));
+        glUniform3f(cameraLoc,camera.Position.x,camera.Position.y,camera.Position.z);
+        glUniform1f(brightLoc,bright);
         glBindBuffer(GL_ARRAY_BUFFER,VBO);
         glBindVertexArray(VAO);
         //model = glm::rotate(model,(GLfloat)glfwGetTime()*20.0f,glm::vec3(0.0f,0.0f,1.0f));
@@ -245,15 +250,17 @@ void Do_Movement()
 {
     // Camera controls
     if(keys[GLFW_KEY_W])
-        {
-          camera.ProcessKeyboard(FORWARD, deltaTime);
-        }
+      camera.ProcessKeyboard(FORWARD, deltaTime);
     if(keys[GLFW_KEY_S])
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+      camera.ProcessKeyboard(BACKWARD, deltaTime);
     if(keys[GLFW_KEY_A])
-        camera.ProcessKeyboard(LEFT, deltaTime);
+      camera.ProcessKeyboard(LEFT, deltaTime);
     if(keys[GLFW_KEY_D])
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+      camera.ProcessKeyboard(RIGHT, deltaTime);
+    if(keys[GLFW_KEY_R])
+      bright *=1.2;
+    if(keys[GLFW_KEY_F])
+      bright /=1.2;
 }
 
 // Is called whenever a key is pressed/released via GLFW
