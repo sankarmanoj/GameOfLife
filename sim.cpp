@@ -52,7 +52,7 @@ int convertDenseToSparse(int * dense, int * sparse)
     {
       for(int j = 0; j<POSITION_WIDTH;j++)
       {
-        if(dense[i*POSITION_WIDTH + j])
+        if(dense[h*POSITION_HEIGHT*POSITION_WIDTH + i*POSITION_WIDTH + j])
         {
 
           sparse[count*3]=j-HALF_POSITION_WIDTH;
@@ -127,7 +127,7 @@ int main()
     GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
     for(int i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,80);
+      cellFrame[i]=rInt(1000,998);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
 
@@ -242,15 +242,18 @@ void Do_Movement()
 {
     // Camera controls
     if(keys[GLFW_KEY_W])
-        {
-          camera.ProcessKeyboard(FORWARD, deltaTime);
-        }
+     camera.ProcessKeyboard(FORWARD, deltaTime);
     if(keys[GLFW_KEY_S])
         camera.ProcessKeyboard(BACKWARD, deltaTime);
     if(keys[GLFW_KEY_A])
         camera.ProcessKeyboard(LEFT, deltaTime);
     if(keys[GLFW_KEY_D])
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if(keys[GLFW_KEY_Q])
+        camera.ProcessKeyboard(UP, deltaTime);
+    if(keys[GLFW_KEY_E])
+        camera.ProcessKeyboard(DOWN, deltaTime);
+
 }
 
 // Is called whenever a key is pressed/released via GLFW

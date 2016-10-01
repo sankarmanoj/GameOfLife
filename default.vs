@@ -7,6 +7,6 @@ flat out vec4 center;
 void main()
 {
     gl_PointSize=10;
-    center = projection*model*view*vec4((position.x/10),(position.y/10),(position.z/10),1.0); // See how we directly give a vec3 to vec4's constructor
+    center = projection*model*view*vec4((position.x/2),(position.y/2),(position.z/2),1.0); // See how we directly give a vec3 to vec4's constructor
     gl_Position=center;
 }
