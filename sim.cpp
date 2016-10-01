@@ -18,6 +18,9 @@
 #include <unistd.h>
 #include<time.h>
 #define MAX_PARTICLES 1000
+#ifndef __APPLE__
+#define nullptr NULL
+#endif
 int frameRate = 40;
 int debugCount = 40;
 int debugPrintCount = 4;
