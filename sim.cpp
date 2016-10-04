@@ -15,6 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 //For usleep
+#include "constants.h"
 #include <unistd.h>
 #include<time.h>
 #define MAX_PARTICLES 1000
@@ -31,13 +32,7 @@ bool paused = false;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 // Window dimensions
-const GLuint WIDTH = 1900, HEIGHT = 1000;
-const GLuint POSITION_WIDTH = 200;
-const GLuint POSITION_HEIGHT = 200;
-const GLuint POSITION_DEPTH = 200;
-const GLuint HALF_POSITION_WIDTH = POSITION_WIDTH/2;
-const GLint DEPTH_OFFSET = -1;
-const GLuint TOTAL_POSITIONS = POSITION_HEIGHT* POSITION_WIDTH*POSITION_DEPTH;
+
 //Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
