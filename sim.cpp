@@ -128,7 +128,7 @@ int main()
 
     for(uint i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,0);
+      cellFrame[i]=rInt(100,70);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
     printf("Current Number of Cells = %d\n",currentNumberOfCells);

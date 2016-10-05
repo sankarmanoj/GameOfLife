@@ -6,8 +6,8 @@ struct cubearray
   int  position;
   __device__ __host__ int & operator[] (int3 index)
   {
-    int cubeposition = index.z*POSITION_WIDTH*POSITION_HEIGHT + index.y*POSITION_WIDTH + index.z;
-    return data[position+cubeposition];
+    int cubeposition = index.z*4000 + index.y*200 + index.x;
+    return data[position + cubeposition];
   }
 };
 typedef struct cubearray cubearray;
@@ -18,7 +18,7 @@ typedef struct cubearray cubearray;
     int count = input[make_int3(1,1,1)]+input[make_int3(1,1,0)]+input[make_int3(1,0,1)]+input[make_int3(0,1,1)];
     if(count>1)
     {
-      return 0;
+      return 1;
     }
     else{
       return 0;
@@ -53,7 +53,7 @@ __global__ void transformKernel(int * deviceFrame , int * outputDeviceFrame)
   output_cube.position = absolutePosition;
   current_cube.position = absolutePosition;
   functor x;
-  output_cube[make_int3(1,1,1)]=0;
+  output_cube[make_int3(1,1,1)]=x(current_cube);
 
 }
 extern  void transformOperator(int * hostFrame)
@@ -70,9 +70,9 @@ extern  void transformOperator(int * hostFrame)
   }
   // printf("Blocks = %d (x,y)=%d,%d\n",blocks,xblocks,yblocks);
   transformKernel<<<dim3(xblocks,yblocks),1024>>>(deviceFrame,outputDeviceFrame);
-  // cudaDeviceSynchronize();
+  cudaDeviceSynchronize();
   cudaMemcpy(hostFrame,outputDeviceFrame,sizeof(int)*TOTAL_POSITIONS,cudaMemcpyDeviceToHost);
-  // cudaMemcpyAsync(deviceFrame,outputDeviceFrame,sizeof(int)*TOTAL_POSITIONS,cudaMemcpyDeviceToDevice);
+  cudaMemcpyAsync(deviceFrame,outputDeviceFrame,sizeof(int)*TOTAL_POSITIONS,cudaMemcpyDeviceToDevice);
   // memset(hostFrame,0,sizeof(int)*TOTAL_POSITIONS);
 
 }

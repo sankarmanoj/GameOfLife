@@ -23,6 +23,5 @@ void main()
     {
       bright+=2.0*log(10/radius);
     }
-    bright=1.0f;
     gl_Position=center;
 }
