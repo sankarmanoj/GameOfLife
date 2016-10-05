@@ -18,6 +18,7 @@
 #include "constants.h"
 #include <unistd.h>
 #include<time.h>
+#include "gameSim.h"
 #define MAX_PARTICLES 1000
 #ifndef __APPLE__
 #define nullptr NULL
@@ -45,11 +46,11 @@ void Do_Movement();
 int convertDenseToSparse(int * dense, int * sparse)
 {
   int count = 0;
-  for(int h = 0; h<POSITION_DEPTH;h++)
+  for(uint h = 0; h<POSITION_DEPTH;h++)
   {
-    for(int i =0 ; i<POSITION_HEIGHT;i++)
+    for(uint i =0 ; i<POSITION_HEIGHT;i++)
     {
-      for(int j = 0; j<POSITION_WIDTH;j++)
+      for(uint j = 0; j<POSITION_WIDTH;j++)
       {
         if(dense[h*POSITION_HEIGHT*POSITION_WIDTH + i*POSITION_WIDTH + j])
         {
@@ -124,9 +125,10 @@ int main()
     GLuint currentNumberOfCells;
     GLint * cellFrame = (GLint*)malloc(sizeof(int)*TOTAL_POSITIONS);
     GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
-    for(int i = 0; i<TOTAL_POSITIONS; i++)
+    initDevice(cellFrame);
+    for(uint i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,98);
+      cellFrame[i]=rInt(100,0);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
 
@@ -229,6 +231,8 @@ int main()
         // Swap the screen buffers
         glfwSwapBuffers(window);
         count++;
+        transformOperator(cellFrame);
+        currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
 
 
     }
