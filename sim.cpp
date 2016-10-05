@@ -125,13 +125,14 @@ int main()
     GLuint currentNumberOfCells;
     GLint * cellFrame = (GLint*)malloc(sizeof(int)*TOTAL_POSITIONS);
     GLint * openGLSparseFrame = (GLint*)malloc(sizeof(int)*3*TOTAL_POSITIONS);
-    initDevice(cellFrame);
+
     for(uint i = 0; i<TOTAL_POSITIONS; i++)
     {
       cellFrame[i]=rInt(100,0);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
-
+    printf("Current Number of Cells = %d\n",currentNumberOfCells);
+    initDevice(cellFrame);
 
 
     // for(int i = 0; i<numberParticles*8;i++)
@@ -205,25 +206,6 @@ int main()
         glBindVertexArray(VAO);
         //model = glm::rotate(model,(GLfloat)glfwGetTime()*20.0f,glm::vec3(0.0f,0.0f,1.0f));
         glUniformMatrix4fv(modelLoc,1,GL_FALSE,glm::value_ptr(model));
-        // particles[0]=0;
-        // particles[1]=0;
-        // particles[2]=0.0;
-        // particles[3]=0.0f;
-        // particles[4]=0.0f;
-        // particles[5]=0.0f;
-        // particles[6]=5000.0f;
-        // particles[7]=1.0f;
-        #ifdef DEBUG
-        for (int i =0; i<8*debugPrintCount; i++)
-        {
-          std::cout<<particles[i]<<":";
-          if((i+1)%8==0)
-          std::cout<<std::endl;
-        }
-        std::cout<<"Done with try "<<count<<std::endl;
-        if(count==debugCount)
-        break;
-        #endif
         glBufferData(GL_ARRAY_BUFFER,3*currentNumberOfCells*sizeof(GLint),openGLSparseFrame,GL_STREAM_DRAW);
         glDrawArrays(GL_POINTS , 0, currentNumberOfCells);
         glBindVertexArray(0);
@@ -233,7 +215,7 @@ int main()
         count++;
         transformOperator(cellFrame);
         currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
-
+        printf("Current Number of Cells = %d\n",currentNumberOfCells);
 
     }
     // Properly de-allocate all resources once they've outlived their purpose
