@@ -19,11 +19,11 @@
 #include <unistd.h>
 #include<time.h>
 #include "gameSim.h"
-#define MAX_PARTICLES 1000
 #ifndef __APPLE__
 #define nullptr NULL
 #endif
-int frameRate = 40;
+int frameRate = 30;
+int transformRate = 10;
 int debugCount = 40;
 int debugPrintCount = 4;
 int numberParticles = 1024*1;
@@ -36,6 +36,9 @@ bool firstMouse = true;
 bool paused = false;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+GLfloat lastTransformCells = 0.0f;
+GLfloat transformInterval = 0.0f;
+GLfloat frameTime;
 // Window dimensions
 
 //Function prototypes
@@ -57,7 +60,7 @@ int convertDenseToSparse(int * dense, int * sparse)
 
           sparse[count*3]=j-HALF_POSITION_WIDTH;
           sparse[count*3 + 1]=i;
-          sparse[count*3 + 2]=h+DEPTH_OFFSET;
+          sparse[count*3 + 2]=h-POSITION_DEPTH;
           count++;
         }
       }
@@ -70,7 +73,7 @@ GLuint rInt(GLuint Max,GLuint Threshold)
   GLuint value =  (GLuint)(((float)rand()/(float)RAND_MAX)*(float)Max);
   if(value>Threshold)
   return 1;
-
+  else
   return 0;
 }
 
@@ -97,7 +100,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Game Of Life", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
@@ -128,10 +131,10 @@ int main()
 
     for(uint i = 0; i<TOTAL_POSITIONS; i++)
     {
-      cellFrame[i]=rInt(100,70);
+      cellFrame[i]=rInt(100,80);
     }
     currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
-    printf("Current Number of Cells = %d\n",currentNumberOfCells);
+    // printf("Current Number of Cells = %d\n",currentNumberOfCells);
     initDevice(cellFrame);
 
 
@@ -166,9 +169,13 @@ int main()
     // glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
+    transformInterval = 1/(float)transformRate;
+    frameTime = 1/frameRate;
+    lastTransformCells = glfwGetTime();
+    GLfloat actualLastFrame = 0.0f;
+    printf("Current Number of Cells = %d\n",currentNumberOfCells);
+    printf("%f - Transform Interval \n",transformInterval);
 
-
-    int count = 0;
     while (!glfwWindowShouldClose(window))
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
@@ -176,7 +183,15 @@ int main()
 
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-      //  usleep(1000*(1000/frameRate-deltaTime));
+        std::stringstream ss;
+        double fps = 1/(currentFrame-actualLastFrame);
+        ss << "GAME OF LIFE 1.0 [" << fps << " FPS]";
+        glfwSetWindowTitle(window,ss.str().c_str());
+        if(deltaTime<frameTime)
+        {
+          usleep(1000000*(frameTime - deltaTime));
+        }
+        actualLastFrame = glfwGetTime();
         glfwPollEvents();
 
 
@@ -212,10 +227,14 @@ int main()
         glBindBuffer(GL_ARRAY_BUFFER,0);
         // Swap the screen buffers
         glfwSwapBuffers(window);
-        count++;
-        transformOperator(cellFrame);
-        currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
-        printf("Current Number of Cells = %d\n",currentNumberOfCells);
+        if(transformInterval<(currentFrame-lastTransformCells))
+        {
+          lastTransformCells = currentFrame;
+          transformOperator(cellFrame);
+          currentNumberOfCells = convertDenseToSparse(cellFrame,openGLSparseFrame);
+          printf("Current Number of Cells = %d\n",currentNumberOfCells);
+
+        }
 
     }
     // Properly de-allocate all resources once they've outlived their purpose
